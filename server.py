@@ -32,6 +32,7 @@ async def review_pr(pr_url: str, ctx: Context) -> str:
 
     try:
         agent = PRAgent()
+        get_settings().set("CONFIG.publish_output", False)
         result = await agent.handle_request(pr_url, "/review")
         await ctx.report_progress(1, 1)
         return result or "Review completed, but no results were returned."
