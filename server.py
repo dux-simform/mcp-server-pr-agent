@@ -17,25 +17,26 @@ mcp = FastMCP("PR-Agent", dependencies=["pr_agent"])
 
 
 @mcp.tool()
-async def review_pr(pr_url_or_branch: str, ctx: Context) -> str:
+async def review_pr(pr_url: str, ctx: Context) -> str:
     """
-    Review a pull request or local branch comparison.
+    Review a pull request and provide feedback.
 
     Args:
-        pr_url_or_branch: Either a full PR URL or a local branch name to compare against (e.g., 'main')
+        pr_url: The URL of the pull request to review
 
     Returns:
-        A comprehensive review of the pull request or branch comparison
+        A comprehensive review of the pull request
     """
-    await ctx.info(f"Reviewing PR: {pr_url_or_branch}")
+    await ctx.info(f"Reviewing PR: {pr_url}")
     await ctx.report_progress(0, 1)
 
     try:
         agent = PRAgent()
         # Force publish_output to be False to avoid the labels issue
         get_settings().set("CONFIG.publish_output", False)
-        result = await agent.handle_request(pr_url_or_branch, "/review")
+        result = await agent.handle_request(pr_url, "/review")
         await ctx.report_progress(1, 1)
+        print(":::::::::::::::", result)
         return result or "Review completed, but no results were returned."
     except Exception as e:
         logger.error(f"Error reviewing PR: {e}")
@@ -43,23 +44,24 @@ async def review_pr(pr_url_or_branch: str, ctx: Context) -> str:
 
 
 @mcp.tool()
-async def describe_pr(pr_url_or_branch: str, ctx: Context) -> str:
+async def describe_pr(pr_url: str, ctx: Context) -> str:
     """
-    Generate a description for a pull request or local branch comparison.
+    Generate a description for a pull request based on its changes.
 
     Args:
-        pr_url_or_branch: Either a full PR URL or a local branch name to compare against (e.g., 'main')
+        pr_url: The URL of the pull request to describe
 
     Returns:
-        A detailed description of the changes
+        A detailed description suitable for the PR
     """
-    await ctx.info(f"Generating description for PR: {pr_url_or_branch}")
+    await ctx.info(f"Generating description for PR: {pr_url}")
     await ctx.report_progress(0, 1)
 
     try:
         agent = PRAgent()
-        result = await agent.handle_request(pr_url_or_branch, "/describe")
+        result = await agent.handle_request(pr_url, "/describe")
         await ctx.report_progress(1, 1)
+        print(":::::::::::::::", result)
         return result or "Description generated, but no results were returned."
     except Exception as e:
         logger.error(f"Error describing PR: {e}")
