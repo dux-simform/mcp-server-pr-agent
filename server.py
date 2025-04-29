@@ -223,7 +223,7 @@ if __name__ == "__main__":
 
     get_settings().set("CONFIG.git_provider", os.getenv("CONFIG_GIT_PROVIDER"))
     get_settings().set("CONFIG.publish_output", os.getenv("CONFIG_PUBLISH_OUTPUT"))
-    get_settings().set("CONFIG.verbosity_level", os.getenv("CONFIG_VERBOSITY_LEVEL"))
+    get_settings().set("CONFIG.verbosity_level", int(os.getenv("CONFIG_VERBOSITY_LEVEL")))
 
     get_settings().set("openai.key", os.getenv("OPENAI_API_KEY"))
     get_settings().set("openai.api_type", os.getenv("OPENAI_API_TYPE"))
