@@ -42,28 +42,30 @@ async def review_pr(pr_url: str, ctx: Context) -> str:
         return f"Error reviewing PR: {str(e)}"
 
 
-# @mcp.tool()
-# async def describe_pr(pr_url: str, ctx: Context) -> str:
-#     """
-#     Generate a description for a pull request based on its changes.
-#
-#     Args:
-#         pr_url: The URL of the pull request to describe
-#
-#     Returns:
-#         A detailed description suitable for the PR
-#     """
-#     await ctx.info(f"Generating description for PR: {pr_url}")
-#     await ctx.report_progress(0, 1)
-#
-#     try:
-#         agent = PRAgent()
-#         result = await agent.handle_request(pr_url, "/describe")
-#         await ctx.report_progress(1, 1)
-#         return result or "Description generated, but no results were returned."
-#     except Exception as e:
-#         logger.error(f"Error describing PR: {e}")
-#         return f"Error describing PR: {str(e)}"
+@mcp.tool()
+async def describe_pr(pr_url: str, ctx: Context) -> str:
+    """
+    Generate a description for a pull request based on its changes.
+
+    Args:
+        pr_url: The URL of the pull request to describe
+
+    Returns:
+        A detailed description suitable for the PR
+    """
+    await ctx.info(f"Generating description for PR: {pr_url}")
+    await ctx.report_progress(0, 1)
+
+    try:
+        agent = PRAgent()
+        result = await agent.handle_request(pr_url, "/describe")
+        await ctx.report_progress(1, 1)
+        return result or "Description generated, but no results were returned."
+    except Exception as e:
+        logger.error(f"Error describing PR: {e}")
+        return f"Error describing PR: {str(e)}"
+
+
 #
 #
 # @mcp.tool()
