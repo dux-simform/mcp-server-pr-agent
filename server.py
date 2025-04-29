@@ -17,17 +17,24 @@ mcp = FastMCP("PR-Agent", dependencies=["pr_agent"])
 
 
 @mcp.tool()
-async def review_pr(pr_url: str, ctx: Context) -> str:
+async def review_pr(pr_url_or_branch: str, ctx: Context) -> str:
     """
-    Review a pull request and provide feedback.
+    Review a pull request or local branch comparison.
 
     Args:
-        pr_url: The URL of the pull request to review
+        pr_url_or_branch: Either a full PR URL or a local branch name to compare against (e.g., 'main')
 
     Returns:
-        A comprehensive review of the pull request
+        A comprehensive review of the pull request or branch comparison
     """
-    await ctx.info(f"Reviewing PR: {pr_url}")
+    # Check if input is a branch name and convert to local URL format if needed
+    if not pr_url_or_branch.startswith(("http://", "https://", "local://")):
+        pr_url = f"local://{pr_url_or_branch}"
+        await ctx.info(f"Reviewing changes compared to branch: {pr_url_or_branch}")
+    else:
+        pr_url = pr_url_or_branch
+        await ctx.info(f"Reviewing PR: {pr_url}")
+
     await ctx.report_progress(0, 1)
 
     try:
@@ -43,17 +50,24 @@ async def review_pr(pr_url: str, ctx: Context) -> str:
 
 
 @mcp.tool()
-async def describe_pr(pr_url: str, ctx: Context) -> str:
+async def describe_pr(pr_url_or_branch: str, ctx: Context) -> str:
     """
-    Generate a description for a pull request based on its changes.
+    Generate a description for a pull request or local branch comparison.
 
     Args:
-        pr_url: The URL of the pull request to describe
+        pr_url_or_branch: Either a full PR URL or a local branch name to compare against (e.g., 'main')
 
     Returns:
-        A detailed description suitable for the PR
+        A detailed description of the changes
     """
-    await ctx.info(f"Generating description for PR: {pr_url}")
+    # Check if input is a branch name and convert to local URL format if needed
+    if not pr_url_or_branch.startswith(("http://", "https://", "local://")):
+        pr_url = f"local://{pr_url_or_branch}"
+        await ctx.info(f"Generating description for changes compared to branch: {pr_url_or_branch}")
+    else:
+        pr_url = pr_url_or_branch
+        await ctx.info(f"Generating description for PR: {pr_url}")
+
     await ctx.report_progress(0, 1)
 
     try:
