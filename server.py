@@ -32,13 +32,11 @@ async def review_pr(pr_url: str, ctx: Context) -> str:
 
     try:
         agent = PRAgent()
-        # Force publish_output to be False to avoid the labels issue
-        # get_settings().set("CONFIG.publish_output", False)
+        # Force `enable_review_labels_security` and `enable_review_labels_effort` to be False to avoid the labels issue (under development)
         get_settings().set("pr_reviewer.enable_review_labels_security", False)
         get_settings().set("pr_reviewer.enable_review_labels_effort", False)
         result = await agent.handle_request(pr_url, "/review")
         await ctx.report_progress(1, 1)
-        # print(f"Result: {get_settings().data['artifact']}")
         return result or "Review completed, but no results were returned."
     except Exception as e:
         logger.error(f"Error reviewing PR: {e}")
@@ -229,10 +227,6 @@ if __name__ == "__main__":
     load_dotenv()
 
     get_settings().set("CONFIG.git_provider", os.getenv("CONFIG_GIT_PROVIDER"))
-    # get_settings().set("CONFIG.publish_output", os.getenv(
-    #     "CONFIG_PUBLISH_OUTPUT"))  # Set to False to avoid labels issue, for local git provider (under development)
-    # get_settings().set("CONFIG.verbosity_level", int(os.getenv(
-    #     "CONFIG_VERBOSITY_LEVEL")))  # Set to 2 to print results locally, for local git provider
 
     get_settings().set("openai.key", os.getenv("OPENAI_API_KEY"))
     get_settings().set("openai.api_type", os.getenv("OPENAI_API_TYPE"))
