@@ -223,11 +223,14 @@ if __name__ == "__main__":
 
     get_settings().set("CONFIG.git_provider", os.getenv("CONFIG_GIT_PROVIDER"))
     get_settings().set("CONFIG.publish_output", os.getenv("CONFIG_PUBLISH_OUTPUT"))
+    get_settings().set("CONFIG.verbosity_level", os.getenv("CONFIG_VERBOSITY_LEVEL"))
+
     get_settings().set("openai.key", os.getenv("OPENAI_API_KEY"))
     get_settings().set("openai.api_type", os.getenv("OPENAI_API_TYPE"))
     get_settings().set("openai.api_version", os.getenv("OPENAI_API_VERSION"))
     get_settings().set("openai.api_base", os.getenv("OPENAI_API_BASE"))
     get_settings().set("openai.deployment_id", os.getenv("OPENAI_API_DEPLOYMENT"))
+
     get_settings().set("github.user_token", os.getenv("GITHUB_USER_TOKEN"))
 
     # Run the MCP server
