@@ -27,21 +27,14 @@ async def review_pr(pr_url_or_branch: str, ctx: Context) -> str:
     Returns:
         A comprehensive review of the pull request or branch comparison
     """
-    # Check if input is a branch name and convert to local URL format if needed
-    if not pr_url_or_branch.startswith(("http://", "https://", "local://")):
-        pr_url = f"local://{pr_url_or_branch}"
-        await ctx.info(f"Reviewing changes compared to branch: {pr_url_or_branch}")
-    else:
-        pr_url = pr_url_or_branch
-        await ctx.info(f"Reviewing PR: {pr_url}")
-
+    await ctx.info(f"Reviewing PR: {pr_url_or_branch}")
     await ctx.report_progress(0, 1)
 
     try:
         agent = PRAgent()
         # Force publish_output to be False to avoid the labels issue
         get_settings().set("CONFIG.publish_output", False)
-        result = await agent.handle_request(pr_url, "/review")
+        result = await agent.handle_request(pr_url_or_branch, "/review")
         await ctx.report_progress(1, 1)
         return result or "Review completed, but no results were returned."
     except Exception as e:
@@ -60,19 +53,12 @@ async def describe_pr(pr_url_or_branch: str, ctx: Context) -> str:
     Returns:
         A detailed description of the changes
     """
-    # Check if input is a branch name and convert to local URL format if needed
-    if not pr_url_or_branch.startswith(("http://", "https://", "local://")):
-        pr_url = f"local://{pr_url_or_branch}"
-        await ctx.info(f"Generating description for changes compared to branch: {pr_url_or_branch}")
-    else:
-        pr_url = pr_url_or_branch
-        await ctx.info(f"Generating description for PR: {pr_url}")
-
+    await ctx.info(f"Generating description for PR: {pr_url_or_branch}")
     await ctx.report_progress(0, 1)
 
     try:
         agent = PRAgent()
-        result = await agent.handle_request(pr_url, "/describe")
+        result = await agent.handle_request(pr_url_or_branch, "/describe")
         await ctx.report_progress(1, 1)
         return result or "Description generated, but no results were returned."
     except Exception as e:
