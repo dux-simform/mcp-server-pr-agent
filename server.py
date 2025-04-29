@@ -32,6 +32,7 @@ async def review_pr(pr_url: str, ctx: Context) -> str:
 
     try:
         agent = PRAgent()
+        # Force publish_output to be False to avoid the labels issue
         get_settings().set("CONFIG.publish_output", False)
         result = await agent.handle_request(pr_url, "/review")
         await ctx.report_progress(1, 1)
@@ -223,8 +224,9 @@ if __name__ == "__main__":
     load_dotenv()
 
     get_settings().set("CONFIG.git_provider", os.getenv("CONFIG_GIT_PROVIDER"))
+    # `publish_output` should be set to False to avoid the labels issue for local git provider
     get_settings().set("CONFIG.publish_output", os.getenv("CONFIG_PUBLISH_OUTPUT"))
-    get_settings().set("CONFIG.verbosity_level", int(os.getenv("CONFIG_VERBOSITY_LEVEL")))
+    # get_settings().set("CONFIG.verbosity_level", int(os.getenv("CONFIG_VERBOSITY_LEVEL")))
 
     get_settings().set("openai.key", os.getenv("OPENAI_API_KEY"))
     get_settings().set("openai.api_type", os.getenv("OPENAI_API_TYPE"))
