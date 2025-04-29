@@ -224,9 +224,10 @@ if __name__ == "__main__":
     load_dotenv()
 
     get_settings().set("CONFIG.git_provider", os.getenv("CONFIG_GIT_PROVIDER"))
-    # `publish_output` should be set to False to avoid the labels issue for local git provider
-    get_settings().set("CONFIG.publish_output", os.getenv("CONFIG_PUBLISH_OUTPUT"))
-    # get_settings().set("CONFIG.verbosity_level", int(os.getenv("CONFIG_VERBOSITY_LEVEL")))
+    get_settings().set("CONFIG.publish_output", os.getenv(
+        "CONFIG_PUBLISH_OUTPUT"))  # Set to False to avoid labels issue, for local git provider (under development)
+    get_settings().set("CONFIG.verbosity_level", int(os.getenv(
+        "CONFIG_VERBOSITY_LEVEL")))  # Set to 2 to print results locally, for local git provider
 
     get_settings().set("openai.key", os.getenv("OPENAI_API_KEY"))
     get_settings().set("openai.api_type", os.getenv("OPENAI_API_TYPE"))
