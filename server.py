@@ -84,6 +84,8 @@ async def find_bugs(pr_url: str, ctx: Context) -> str:
     try:
         agent = PRAgent()
         # Configure the review to focus on bugs and issues
+        get_settings().set("pr_reviewer.enable_review_labels_security", False)
+        get_settings().set("pr_reviewer.enable_review_labels_effort", False)
         get_settings().set("pr_reviewer.require_score_review", False)
         get_settings().set("pr_reviewer.require_tests_review", False)
         get_settings().set("pr_reviewer.require_security_review", True)  # Focus on security issues
