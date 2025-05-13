@@ -67,6 +67,58 @@ async def describe_pr(pr_url: str, ctx: Context) -> str:
         return f"Error describing PR: {str(e)}"
 
 
+@mcp.tool()
+async def find_bugs(pr_url: str, ctx: Context) -> str:
+    """
+    Scan a pull request for potential bugs and issues.
+
+    Args:
+        pr_url: The URL of the pull request to scan for bugs
+
+    Returns:
+        A report of potential bugs and issues found in the PR
+    """
+    await ctx.info(f"Scanning PR for bugs: {pr_url}")
+    await ctx.report_progress(0, 1)
+
+    try:
+        agent = PRAgent()
+        # Configure the review to focus on bugs and issues
+        get_settings().set("pr_reviewer.require_score_review", False)
+        get_settings().set("pr_reviewer.require_tests_review", False)
+        get_settings().set("pr_reviewer.require_security_review", True)  # Focus on security issues
+        get_settings().set("pr_reviewer.require_focused_review", False)
+        get_settings().set("pr_reviewer.extra_instructions",
+                           "Focus exclusively on identifying bugs, logic errors, security vulnerabilities, and potential runtime issues. Skip style and maintainability concerns.")
+
+        # Use the review tool but with our custom configuration
+        result = await agent.handle_request(pr_url, "/review")
+
+        # Reset settings to defaults
+        get_settings().set("pr_reviewer.require_security_review", True)
+        get_settings().set("pr_reviewer.extra_instructions", "")
+
+        await ctx.report_progress(1, 1)
+
+        if result:
+            # Try to extract just the bug information from the review
+            import re
+            bug_sections = re.findall(
+                r'(## Bugs|### Bugs|## Possible Issues|### Possible Issues|## Security Issues|### Security Issues).*?(?=##|\Z)',
+                result, re.DOTALL)
+
+            if bug_sections:
+                return "# Bug Scan Results\n\n" + "\n\n".join(bug_sections)
+            else:
+                return "# Bug Scan Results\n\nNo critical bugs or issues were identified in the scan.\n\n" + \
+                    "Full review content:\n\n" + result
+        else:
+            return "Bug scan completed, but no results were returned."
+    except Exception as e:
+        logger.error(f"Error scanning PR for bugs: {e}")
+        return f"Error scanning PR for bugs: {str(e)}"
+
+
 #
 #
 # @mcp.tool()
