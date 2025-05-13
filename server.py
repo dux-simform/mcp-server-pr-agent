@@ -32,6 +32,9 @@ async def review_pr(pr_url: str, ctx: Context) -> str:
 
     try:
         agent = PRAgent()
+        # Force `enable_review_labels_security` and `enable_review_labels_effort` to be False to avoid the labels issue (under development)
+        get_settings().set("pr_reviewer.enable_review_labels_security", False)
+        get_settings().set("pr_reviewer.enable_review_labels_effort", False)
         result = await agent.handle_request(pr_url, "/review")
         await ctx.report_progress(1, 1)
         return result or "Review completed, but no results were returned."
@@ -40,28 +43,30 @@ async def review_pr(pr_url: str, ctx: Context) -> str:
         return f"Error reviewing PR: {str(e)}"
 
 
-# @mcp.tool()
-# async def describe_pr(pr_url: str, ctx: Context) -> str:
-#     """
-#     Generate a description for a pull request based on its changes.
-#
-#     Args:
-#         pr_url: The URL of the pull request to describe
-#
-#     Returns:
-#         A detailed description suitable for the PR
-#     """
-#     await ctx.info(f"Generating description for PR: {pr_url}")
-#     await ctx.report_progress(0, 1)
-#
-#     try:
-#         agent = PRAgent()
-#         result = await agent.handle_request(pr_url, "/describe")
-#         await ctx.report_progress(1, 1)
-#         return result or "Description generated, but no results were returned."
-#     except Exception as e:
-#         logger.error(f"Error describing PR: {e}")
-#         return f"Error describing PR: {str(e)}"
+@mcp.tool()
+async def describe_pr(pr_url: str, ctx: Context) -> str:
+    """
+    Generate a description for a pull request based on its changes.
+
+    Args:
+        pr_url: The URL of the pull request to describe
+
+    Returns:
+        A detailed description suitable for the PR
+    """
+    await ctx.info(f"Generating description for PR: {pr_url}")
+    await ctx.report_progress(0, 1)
+
+    try:
+        agent = PRAgent()
+        result = await agent.handle_request(pr_url, "/describe")
+        await ctx.report_progress(1, 1)
+        return result or "Description generated, but no results were returned."
+    except Exception as e:
+        logger.error(f"Error describing PR: {e}")
+        return f"Error describing PR: {str(e)}"
+
+
 #
 #
 # @mcp.tool()
@@ -221,12 +226,14 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    get_settings().set("CONFIG.git_provider", os.getenv("GIT_PROVIDER"))
+    get_settings().set("CONFIG.git_provider", os.getenv("CONFIG_GIT_PROVIDER"))
+
     get_settings().set("openai.key", os.getenv("OPENAI_API_KEY"))
     get_settings().set("openai.api_type", os.getenv("OPENAI_API_TYPE"))
     get_settings().set("openai.api_version", os.getenv("OPENAI_API_VERSION"))
     get_settings().set("openai.api_base", os.getenv("OPENAI_API_BASE"))
     get_settings().set("openai.deployment_id", os.getenv("OPENAI_API_DEPLOYMENT"))
+
     get_settings().set("github.user_token", os.getenv("GITHUB_USER_TOKEN"))
 
     # Run the MCP server
